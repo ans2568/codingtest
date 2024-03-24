@@ -1,67 +1,67 @@
 #include <iostream>
 #include <vector>
-#include <queue>
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
-int N, M;
 vector<vector<int>> graph;
+vector<int> result_dfs, result_bfs;
 vector<bool> visited;
-void dfs(int num);
-void bfs(int num);
-int depth = 0;
+int n, m, v;
 
-int main() {
-  int V;
-  cin >> N >> M >> V;
-  graph.resize(N + 1);
-  visited.resize(N + 1);
-  for (int i = 0; i < M; i++) {
-    int s, e;
-    cin >> s >> e;
-    graph[s].push_back(e);
-    graph[e].push_back(s);
-  }
-  dfs(V);
-  cout << endl;
-  visited = vector<bool>(N+1, false);
-  bfs(V);
-  cout << endl;
-
-  return 0;
-}
-
-void dfs(int num) {
-  if (visited[num] == true)
+void dfs(int node) {
+  if (visited[node] == true)
     return;
-  visited[num] = true;
-  if (depth == 0)
-    cout << num << " ";
-  sort(graph[num].begin(), graph[num].end());
-  for (int i = 0; i < graph[num].size(); i++) {
-    if (visited[graph[num][i]] == false) {
-      cout << graph[num][i] << " ";
-      depth += 1;
-      dfs(graph[num][i]);
-    } else continue;
+  visited[node] = true;
+  result_dfs.push_back(node);
+  sort(graph[node].begin(), graph[node].end());
+  for (int i = 0; i < graph[node].size(); i++) {
+    dfs(graph[node][i]);
   }
 }
 
-void bfs(int num) {
-    queue<int> queue;
-    queue.push(num);
-    cout << num << " ";
-    visited[num] = true;
-    while (!queue.empty()) {
-      int now = queue.front();
-      queue.pop();
-      for (int i = 0; i < graph[now].size(); i++) {
-        if (visited[graph[now][i]] == false) {
-          visited[graph[now][i]] = true;
-          cout << graph[now][i] << " ";
-          queue.push(graph[now][i]);
-        }
+void bfs(int node) {
+  queue<int> q;
+  visited[node] = true;
+  q.push(node);
+  while (!q.empty()) {
+    int next = q.front();
+    q.pop();
+    result_bfs.push_back(next);
+    sort(graph[next].begin(), graph[next].end());
+    for (int i = 0; i < graph[next].size(); i++) {
+      if (visited[graph[next][i]] == true)
+        continue;
+      else {
+        visited[graph[next][i]] = true;
+        q.push(graph[next][i]);
       }
     }
+  }
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  cout.tie(NULL);
+  cin >> n >> m >> v;
+  graph.resize(n + 1);
+  visited = vector<bool>(n+1, false);
+  for (int i = 0; i < m; i++) {
+    int start, end;
+    cin >> start >> end;
+    graph[start].push_back(end);
+    graph[end].push_back(start);
+  }
+  dfs(v);
+  for (auto &res : result_dfs)
+    cout << res << " ";
+  cout << "\n";
+
+  visited = vector<bool>(n + 1, false);
+  bfs(v);
+  for (auto &res : result_bfs)
+    cout << res << " ";
+  cout << "\n";
 }
