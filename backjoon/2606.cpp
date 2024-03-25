@@ -1,44 +1,55 @@
 #include <iostream>
+#include <queue>
 #include <vector>
 
 using namespace std;
+int n, m, cnt = 0;
+vector<vector<int>> graph;
+bool visited[101] = {false};
 
-void DFS(int num);
-
-int computer_num, links;
-vector<vector<int>> list;
-vector<bool> visited;
-int count = 0;
-
-int main() {
-  cin >> computer_num;
-  cin >> links;
-  list.resize(computer_num + 1);
-  visited = vector<bool>(computer_num + 1, false);
-  for (int i = 0; i < links; i++) {
-    int s, e;
-    cin >> s >> e;
-    list[s].push_back(e);
-    list[e].push_back(s);
-  }
-
-  DFS(1);
-
-  cout << count;
-
-  return 0;
-}
-
-void DFS(int num) {
+void dfs(int num) {
   if (visited[num] == true)
     return;
-
   visited[num] = true;
-
-  for (size_t i = 0; i < list[num].size(); i++) {
-    if (visited[list[num][i]] == false) {
-      DFS(list[num][i]);
-      count++;
+  for (int i = 0; i < graph[num].size(); i++) {
+    if (visited[graph[num][i]] == false) {
+      cnt += 1;
+      dfs(graph[num][i]);
     }
   }
+}
+
+void bfs() {
+  queue<int> q;
+  visited[1] = true;
+  q.push(1);
+  while (!q.empty()) {
+    int now = q.front();
+    q.pop();
+    for (int i = 0; i < graph[now].size(); i++) {
+      if (visited[graph[now][i]] == false) {
+        cnt += 1;
+        visited[graph[now][i]] = true;
+        q.push(graph[now][i]);
+      }
+    }
+  }
+}
+
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  cout.tie(NULL);
+  cin >> n;
+  cin >> m;
+  graph.resize(n + 1);
+  for (int i = 0; i < m; i++) {
+    int s, e;
+    cin >> s >> e;
+    graph[s].push_back(e);
+    graph[e].push_back(s);
+  }
+//   dfs(1);
+  bfs();
+  cout << cnt << "\n";
 }
