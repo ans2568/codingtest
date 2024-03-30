@@ -1,62 +1,48 @@
 #include <iostream>
 #include <vector>
+#define MAX_SIZE 2000
+using namespace std;
 
-void DFS(int now, int depth);
+int N, M;
+vector<vector<int>> graph;
+bool visited[MAX_SIZE];
+bool success = false;
 
-// 인접 리스트 A 선언
-static std::vector<std::vector<int>> A;
-
-// 방문 여부 선언
-static std::vector<bool> visited(8, false);
-
-// 5번 도착 여부 선언
-static bool isArrive = false;
-
-int main() {
-    // N : 노드, E : 엣지
-    int N, E;
-    std::cin >> N >> E;
-
-    // A 초기화
-    A.resize(N);
-
-    for(int i = 0; i < E; i++) {
-        int start, end;
-        std::cin >> start >> end;
-        // 양방향 방문 가능으로 모두 push_back
-        A.at(start).push_back(end);
-        A.at(end).push_back(start);
+void dfs(int n, int depth) {
+  if (depth == 5 || success) {
+    success = true;
+    return;
+  }
+  visited[n] = true;
+  for (int i = 0; i < graph[n].size(); i++) {
+    if (visited[graph[n][i]] == false) {
+      dfs(graph[n][i], depth+1);
     }
-    for(int i = 0; i < N; i++) {
-        DFS(i, 1);
-        if (isArrive) break;
-    }
+  }
 
-    if (isArrive)
-        std::cout << 1 << std::endl;
-    else
-        std::cout << 0 << std::endl;
-
-    return 0;
+  // KEY POINT : 이전에 방문한 내용이더라도 다시 재방문이 가능하도록
+  // 변경해야하기 때문에 false로 초기화 필요
+  visited[n] = false;
 }
 
-void DFS(int now, int depth) {
-    // depth가 5이거나 이미 도착했을 경우 빠져나오기 위한 조건문
-    if (depth == 5 || isArrive) {
-        isArrive = true;
-        return;
-    }
+int main() {
+  ios_base::sync_with_stdio(false);
+  cin.tie(NULL);
+  cout.tie(NULL);
 
-    // 방문 여부 true로 변환
-    visited.at(now) = true;
+  cin >> N >> M;
+  graph.resize(N);
+  for (int i = 0; i < M; i++) {
+    int s, e;
+    cin >> s >> e;
+    graph[s].push_back(e);
+    graph[e].push_back(s);
+  }
+  for (int i = 0; i < N; i++)
+    dfs(i, 1);
 
-    for(int i : A.at(now)) {
-        // 방문이 아직 안되었을 경우 재귀적으로 탐색
-        if (!visited.at(i)) {
-            DFS(i, depth + 1);
-        }
-    }
-
-    // 방문 여부 false로 변환 - 다시 빠져나와서 탐색을 진행해야하므로
-    visited.at(now) = false;
+  if (success)
+    cout << 1 << "\n";
+  else
+    cout << 0 << "\n";
 }
