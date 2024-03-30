@@ -1,51 +1,55 @@
+#include <cstring>
 #include <iostream>
-#include <vector>
-#include <algorithm>
-
+#include <queue>
 using namespace std;
 
-bool DFS(int h, int w);
+int graph[50][50];
+int dx[8] = {1, -1, 0, 0, 1, -1, 1, -1};
+int dy[8] = {0, 0, 1, -1, 1, -1, -1, 1};
+int w, h, cnt;
+bool visited[50][50];
+queue<pair<int, int>> q;
 
-int W, H; // width, height
-int map[50][50];
+void bfs(int a, int b) {
+  q.push(make_pair(a, b));
+  visited[a][b] = true;
+  while (!q.empty()) {
+    int x = q.front().first;
+    int y = q.front().second;
+    q.pop();
+    for (int i = 0; i < 8; i++) {
+      int new_x = x + dx[i];
+      int new_y = y + dy[i];
+      if ((new_x >= 0 && new_x < h) && (new_y >= 0 && new_y < w)) {
+        if (!visited[new_x][new_y] && graph[new_x][new_y]) {
+          visited[new_x][new_y] = true;
+          q.push(make_pair(new_x, new_y));
+        }
+      }
+    }
+  }
+}
 
 int main() {
   while (true) {
-    cin >> W >> H;
-    if (W == 0 && H == 0)
+    cnt = 0;
+    memset(visited, false, sizeof(visited));
+    cin >> w >> h;
+    if (w == 0 && h == 0)
       break;
-    for (int i = 0; i < H; i++) {
-      for (int j = 0; j < W; j++) {
-        cin >> map[i][j];
+    for (int i = 0; i < h; i++) {
+      for (int j = 0; j < w; j++) {
+        cin >> graph[i][j];
       }
     }
-    int cnt = 0;
-    for (int i = 0; i < H; i++) {
-      for (int j = 0; j < W; j++) {
-        if (DFS(i, j))
-          cnt += 1;
+    for (int i = 0; i < h; i++) {
+      for (int j = 0; j < w; j++) {
+        if (!visited[i][j] && graph[i][j]) {
+          cnt++;
+          bfs(i, j);
+        }
       }
     }
-    cout << cnt << endl;
+    cout << cnt << "\n";
   }
-
-  return 0;
-}
-
-bool DFS(int h, int w) {
-  if (h <= -1 || w <= -1 || h >= H || w >= W)
-    return false;
-  if (map[h][w] == 1) {
-    map[h][w] = 0;
-    DFS(h + 1, w);
-    DFS(h + 1, w + 1);
-    DFS(h + 1, w - 1);
-    DFS(h - 1, w - 1);
-    DFS(h - 1, w);
-    DFS(h - 1, w + 1);
-    DFS(h, w + 1);
-    DFS(h, w - 1);
-    return true;
-  }
-  return false;
 }
