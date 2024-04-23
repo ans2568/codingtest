@@ -1,33 +1,30 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <stack>
 using namespace std;
 
-vector<string> result;
-vector<string> problem;
+int T;
 int main() {
-  int n;
-  cin >> n;
-  for (int i = 0; i < n; i++) {
+  cin >> T;
+  for (int i = 0; i < T; ++i) {
+    stack<char> stk;
     string str;
     cin >> str;
-    stack<char> stck;
-    string answer = "YES";
-    for (int i = 0; i < str.size(); i++) {
-      if (str[i] == '(') {
-        stck.push(str[i]);
-      } else if (!stck.empty() && str[i] == ')' && stck.top() == '(') {
-        stck.pop();
-      } else {
-        answer = "NO";
-        break;
+    for (int j = 0; j < str.size(); ++j) {
+      if (stk.empty()) // 스택이 비어있을 때
+        stk.push(str[j]);
+      else {
+        if (stk.top() == '(' && str[j] == ')') {
+          stk.pop();
+        } else {
+          stk.push(str[j]);
+        }
       }
     }
-    if (!stck.empty())
-      answer = "NO";
-    result.push_back(answer);
+    if (stk.empty())
+      cout << "YES" << endl;
+    else
+      cout << "NO" << endl;
   }
-  for (auto &res : result)
-    cout << res << endl;
+  return 0;
 }
